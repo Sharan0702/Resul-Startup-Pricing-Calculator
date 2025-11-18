@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RESUL Startup Edition Pricing Calculator</title>
+  <style>
+/* Inline CSS (compact version of the last working UI) */
+:root{
+  --bg:#f6f8fb;
+  --card:#fff;
+  --accent:#2563eb;
+  --muted:#6b7280;
+  --radius:10px;
+  --glass: rgba(0,0,0,0.04);
+  --max-width:1200px;
+}
+*{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+body{margin:0;background:linear-gradient(180deg,var(--bg),#eef2ff 160%);color:#0f172a;padding:24px;-webkit-font-smoothing:antialiased}
+.container{max-width:var(--max-width);margin:0 auto;display:block}
+.header{margin-bottom:14px}
+.header h1{margin:0;font-size:1.3rem}
+.layout{display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:start}
+.card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 8px 24px var(--glass)}
+.panel h2{margin:0 0 8px 0;font-size:1rem}
+.field{display:block;margin-top:8px}
+.field input[type="text"], .field input[type="number"], .field select{margin-top:6px;padding:8px 10px;border-radius:8px;border:1px solid #e6e9ef;width:100%}
+.readonly-field input[type="text"]{background:#f8fafc;border:1px solid #e6e9ef;padding:8px 10px;border-radius:8px;color:#111827;width:100%}
+.full-width{grid-column:1 / -1}
+.channels-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:8px}
+.channel{background:#fbfdff;padding:10px;border-radius:8px;border:1px solid rgba(37,99,235,0.06)}
+.social-platforms{margin-top:8px;display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.actions-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px}
+.actions-left{display:flex;gap:8px;align-items:center}
+.actions-right{display:flex;gap:8px;align-items:center}
+.btn{background:#fff;border:1px solid #dbeafe;padding:8px 12px;border-radius:8px;cursor:pointer}
+.btn.primary{background:var(--accent);color:#fff;border-color:transparent}
+.status{color:var(--muted);font-size:0.9rem}
+.pricing-card{position:sticky;top:24px;margin-bottom:12px}
+.pricing-grid{display:grid;grid-template-columns:1fr 120px;gap:8px 12px;align-items:center}
+.pricing-grid .label{color:var(--muted);font-size:0.95rem}
+.pricing-grid .value{text-align:right;font-weight:600}
+.pricing-grid .divider{height:1px;background:#eef2ff;margin:12px 0;border-radius:2px}
+.total-label{font-weight:700;color:#111827}
+.total-value{font-size:1.05rem;color:var(--accent)}
+.pricing-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.json-preview{background:#0b1220;color:#dff6ff;padding:12px;border-radius:6px;overflow:auto;max-height:420px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,"Roboto Mono",monospace;font-size:0.82rem}
+.hidden{display:none !important}
+@media (max-width:1000px){.layout{grid-template-columns:1fr} .pricing-card{position:static}}
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <h1>RESUL Startup Edition Pricing Calculator</h1>
+    </header>
+
+    <div class="layout">
+      <form id="startup-form" class="card" novalidate>
+        <section class="panel">
+          <h2>Client & Account</h2>
+
+          <label class="field">
+            Client name
+            <input type="text" id="clientName" placeholder="Client name" />
+          </label>
+
+          <label class="field">
+            Account type
+            <input type="text" id="accountType" value="Startup" readonly />
+          </label>
+
+          <label class="field">
+            Deployment
+            <div class="readonly-field">
+              <input type="text" id="deploymentDisplay" value="Cloud" readonly />
+              <input type="hidden" id="deployment" value="cloud" />
+            </div>
+          </label>
+
+          <label class="field">
+            SDK Events Per Year (in MN)
+            <input type="number" id="audienceBase" placeholder="Enter SDK events per year (in MN)" step="any" min="0" />
+          </label>
+
+          <label class="field">
+            Audience Included
+            <input type="number" id="audienceIncluded" min="0" value="0" />
+          </label>
+
+          <label class="field">
+            Business Units
+            <input type="number" id="businessUnits" min="0" value="0" />
+          </label>
+        </section>
+
+        <section class="panel">
+          <h2>Capacity & Features</h2>
+
+          <label class="field">
+            No. of users
+            <input type="number" id="numUsers" min="1" value="3" />
+          </label>
+
+          <label class="field">
+            No. of straigth attribute
+            <input type="number" id="numAttributes" min="0" value="50" />
+          </label>
+
+          <label class="field">
+            No. of derived attributes
+            <input type="number" id="numDerivedAttributes" min="0" value="5" />
+          </label>
+
+          <label class="field">
+            Total data storage (TB)
+            <input type="number" id="dataStorage" min="0" step="0.1" value="0.5" />
+          </label>
+
+          <label class="field">
+            Audience Analytics 360
+            <select id="analytics360">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </label>
+
+          <label class="field">
+            Real-time trigger API
+            <select id="realTimeApi">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="panel full-width">
+          <h2>Channels</h2>
+
+          <div class="channels-grid">
+            <div class="channel" data-channel="email">
+              <label> Email
+                <select class="channel-toggle" data-channel="email">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="sms">
+              <label> SMS
+                <select class="channel-toggle" data-channel="sms">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="whatsapp">
+              <label> WhatsApp
+                <select class="channel-toggle" data-channel="whatsapp">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="rcs">
+              <label> RCS
+                <select class="channel-toggle" data-channel="rcs">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="webpush">
+              <label> Web push & Overlays
+                <select class="channel-toggle" data-channel="webpush">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="apppush">
+              <label> App push & In-App Overlays
+                <select class="channel-toggle" data-channel="apppush">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="qrcode">
+              <label> QR Code
+                <select class="channel-toggle" data-channel="qrcode">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="voice">
+              <label> Voice (VMS)
+                <select class="channel-toggle" data-channel="voice">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="socialPosts">
+              <label> Social Posts (Organic)
+                <select class="channel-toggle" data-channel="socialPosts">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+
+              <div class="social-platforms hidden" aria-hidden="true">
+                <div class="platform"><label><input type="checkbox" class="social-platform" data-platform="facebook" /> Facebook</label></div>
+                <div class="platform"><label><input type="checkbox" class="social-platform" data-platform="x" /> X (Twitter)</label></div>
+                <div class="platform"><label><input type="checkbox" class="social-platform" data-platform="linkedin" /> LinkedIn</label></div>
+                <div class="platform"><label><input type="checkbox" class="social-platform" data-platform="instagram" /> Instagram</label></div>
+              </div>
+            </div>
+
+            <div class="channel" data-channel="smartLinks">
+              <label> Smart Links
+                <select class="channel-toggle" data-channel="smartLinks">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+
+              <div class="platforms-list smartlinks-list hidden" aria-hidden="true">
+                <label><input type="checkbox" class="smartlinks" data-platform="socialPostsAds" disabled /> Social Posts/Ads</label>
+                <label style="margin-left:12px;"><input type="checkbox" class="smartlinks" data-platform="paidMedia" disabled /> Paid Media</label>
+              </div>
+            </div>
+
+            <div class="channel" data-channel="paidMedia">
+              <label> Paid Media
+                <select class="channel-toggle" data-channel="paidMedia">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+
+              <div class="platforms-list hidden paid-media-platforms" aria-hidden="true">
+                <label><input type="checkbox" class="paid-media-platform" data-platform="google" /> Google</label>
+                <label><input type="checkbox" class="paid-media-platform" data-platform="meta" /> Meta</label>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <section class="panel actions-row">
+          <div class="actions-left">
+            <button type="button" id="saveBtn" class="btn primary">Save Startup Edition</button>
+          </div>
+        </section>
+      </form>
+
+      <aside class="side-column">
+        <section class="card pricing-card printable-quote" aria-live="polite">
+          <h2>License Pricing</h2>
+
+          <div class="pricing-grid">
+            <div class="label">Licence Cost (Standard)</div><div class="value" id="licence-base">—</div>
+            <div class="label">Audience Included</div><div class="value" id="licence-audience">—</div>
+            <div class="label">User</div><div class="value" id="licence-users">—</div>
+            <div class="label">Straight Attributes</div><div class="value" id="licence-attributes">—</div>
+            <div class="label">Derived Attributes</div><div class="value" id="licence-derived">—</div>
+            <div class="label">Business Unit</div><div class="value" id="licence-bu">—</div>
+            <div class="label">WhatsApp (if opted)</div><div class="value" id="licence-whatsapp">—</div>
+            <div class="label">Data Storage (TB)</div><div class="value" id="licence-storage">—</div>
+            <div class="label">Audience Analytics 360</div><div class="value" id="licence-analytics">—</div>
+            <div class="label">Real-time trigger API</div><div class="value" id="licence-realtime">—</div>
+            <div class="label">SDK Events (in MN)</div><div class="value" id="licence-sdkevents">—</div>
+            <div class="divider" style="grid-column:1/-1"></div>
+            <div class="label total-label">Total License cost</div><div class="value total-value" id="licence-total">—</div>
+            <div class="label">Discount type</div>
+            <div class="value">
+              <select id="discount-type">
+                <option value="percent">Percent (%)</option>
+                <option value="amount">Amount (INR)</option>
+              </select>
+            </div>
+            <div class="label">Discount</div>
+            <div class="value">
+              <input type="number" id="licence-discount" min="0" value="0" style="width:120px" />
+            </div>
+            <div class="label">Discount (amount)</div><div class="value" id="licence-discount-amt">—</div>
+            <div class="label total-label">License Cost after Discount</div><div class="value total-value" id="licence-after">—</div>
+          </div>
+
+          <p class="note">All amounts shown in INR. Discount applies to the Total License cost.</p>
+
+          <div class="pricing-actions" style="margin-top:12px;">
+            <button type="button" id="resetBtn" class="btn">Reset to defaults</button>
+            <button type="button" id="exportBtn" class="btn">Export Quote (JSON)</button>
+            <button type="button" id="exportPdfBtn" class="btn">Export Quote (PDF)</button>
+          </div>
+        </section>
+
+        <section class="card preview">
+          <h3>Live Preview</h3>
+          <pre id="livePreview" class="json-preview" tabindex="0" aria-label="Live preview of configuration">{}</pre>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <small>Startup edition editor — changes are saved to your browser (localStorage).</small>
+    </footer>
+  </main>
+
+  <!-- html2pdf bundle for client-side PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+  <script>
+/* Inline JS (full app logic: load/save, channel toggles, pricing, JSON & PDF export) */
+const STORAGE_KEY = "startupEditionConfig_v1";
+const CHANNELS_WITH_SENDERS = ["email", "sms", "whatsapp"];
+const SOCIAL_PLATFORMS = ["facebook", "x", "linkedin", "instagram"];
+const PAID_MEDIA_PLATFORMS = ["google", "meta"];
+const PRICING = {
+  baseLicense: 2200000,
+  audiencePerUnit: 1.76,
+  userPerUnit: 105600,
+  straightAttributeUnit: 6336,
+  derivedAttributeUnit: 10000,
+  businessUnitPerUnit: 600000,
+  whatsappIfYes: 500000,
+  storagePerTB: 211200,
+  analytics360IfYes: 500000,
+  realtimeIfYes: 500000,
+  sdkEventsPerMN: 6000
+};
+const defaults = {
+  clientName: "", accountType: "Startup", deployment: "cloud",
+  audienceBase: 0, audienceIncluded: 0, businessUnits: 0,
+  numUsers: 3, numAttributes: 50, numDerivedAttributes: 5, dataStorageTB: 0.5,
+  analytics360: "no", realTimeApi: "no",
+  channels: {
+    email:{enabled:"yes",senderCount:1}, sms:{enabled:"no",senderCount:0}, whatsapp:{enabled:"no",senderCount:0},
+    rcs:{enabled:"no"}, webpush:{enabled:"no"}, apppush:{enabled:"no"}, qrcode:{enabled:"no"}, voice:{enabled:"no"},
+    socialPosts:{enabled:"no",platforms:{facebook:false,x:false,linkedin:false,instagram:false}},
+    smartLinks:{enabled:"no",selected:[]},
+    paidMedia:{enabled:"no",platforms:{google:false,meta:false}}
+  },
+  pricing:{discountType:"percent",discountValue:0}
+};
+function $(sel, ctx=document){return ctx.querySelector(sel)}
+function $all(sel, ctx=document){return Array.from((ctx||document).querySelectorAll(sel))}
+function loadConfig(){try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw) return structuredClone(defaults);const parsed=JSON.parse(raw);return deepMerge(structuredClone(defaults), parsed);}catch(e){console.warn("Failed to load config, using defaults", e);return structuredClone(defaults)}}
+function saveConfig(cfg){localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg, null, 2))}
+function deepMerge(target, src){for(const k of Object.keys(src)){if(src[k]&&typeof src[k]==="object"&&!Array.isArray(src[k])){target[k]=deepMerge(target[k]||{}, src[k]);}else target[k]=src[k];}return target}
+function toINR(n){if(n===null||typeof n==="undefined"||Number.isNaN(Number(n))) return "—";return typeof Intl!=="undefined"?Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:0}).format(Math.round(n)):`₹${Math.round(n)}`}
+function reflectToForm(cfg){
+  $("#clientName").value=cfg.clientName||"";
+  $("#accountType").value=cfg.accountType||"Startup";
+  $("#deployment").value=cfg.deployment||"cloud"; $("#deploymentDisplay").value=cfg.deployment==="cloud"?"Cloud":(cfg.deployment||"Cloud");
+  $("#audienceBase").value=typeof cfg.audienceBase!=="undefined"?cfg.audienceBase:0;
+  $("#audienceIncluded").value=cfg.audienceIncluded??0; $("#businessUnits").value=cfg.businessUnits??0;
+  $("#numUsers").value=cfg.numUsers??1; $("#numAttributes").value=cfg.numAttributes??0; $("#numDerivedAttributes").value=cfg.numDerivedAttributes??0; $("#dataStorage").value=cfg.dataStorageTB??0;
+  $("#analytics360").value=cfg.analytics360||"no"; $("#realTimeApi").value=cfg.realTimeApi||"no";
+  $("#discount-type") && ($("#discount-type").value=(cfg.pricing&&cfg.pricing.discountType)?cfg.pricing.discountType:"percent");
+  $("#licence-discount") && ($("#licence-discount").value=(cfg.pricing&&typeof cfg.pricing.discountValue!=="undefined")?cfg.pricing.discountValue:0);
+  $all(".channel-toggle").forEach((sel)=>{const key=sel.dataset.channel; if(key==="smartLinks"){sel.value=cfg.channels.smartLinks.enabled||"no";return} if(key==="socialPosts"){sel.value=cfg.channels.socialPosts.enabled||"no";return} if(cfg.channels&&cfg.channels[key]&&typeof cfg.channels[key].enabled!=="undefined"){sel.value=cfg.channels[key].enabled}else sel.value="no"});
+  CHANNELS_WITH_SENDERS.forEach((key)=>{const chCfg=cfg.channels&&cfg.channels[key];const channelDiv=document.querySelector(`.channel[data-channel="${key}"]`); if(!channelDiv) return; removeSenderControlIfAny(channelDiv); if(chCfg&&chCfg.enabled==="yes") createSenderControl(channelDiv,key,chCfg.senderCount??1)});
+  const spToggle=document.querySelector('.channel-toggle[data-channel="socialPosts"]'); updateSocialPlatformsVisibility(spToggle,cfg);
+  const smartToggle=document.querySelector('.channel-toggle[data-channel="smartLinks"]'); updateSmartLinksChildren(smartToggle,cfg);
+  const paidToggle=document.querySelector('.channel-toggle[data-channel="paidMedia"]'); updatePaidMediaTopVisibility(paidToggle,cfg);
+  calculateAndRenderPricing(cfg); updatePreview(cfg);
+}
+function readFormToConfig(){
+  const cfg=structuredClone(defaults);
+  cfg.clientName=$("#clientName").value.trim(); cfg.accountType=$("#accountType").value; cfg.deployment=$("#deployment").value||"cloud";
+  cfg.audienceBase=parseFloat($("#audienceBase").value||"0")||0; cfg.audienceIncluded=Math.max(0,parseFloat($("#audienceIncluded").value||"0")||0); cfg.businessUnits=Math.max(0,parseInt($("#businessUnits").value||"0",10));
+  cfg.numUsers=Math.max(1,parseInt($("#numUsers").value||"1",10)); cfg.numAttributes=Math.max(0,parseInt($("#numAttributes").value||"0",10)); cfg.numDerivedAttributes=Math.max(0,parseInt($("#numDerivedAttributes").value||"0",10)); cfg.dataStorageTB=Math.max(0,parseFloat($("#dataStorage").value||"0"));
+  cfg.analytics360=$("#analytics360").value; cfg.realTimeApi=$("#realTimeApi").value;
+  $all(".channel-toggle").forEach((sel)=>{const key=sel.dataset.channel; if(key==="smartLinks"||key==="socialPosts"||key==="paidMedia") return; if(cfg.channels[key]) cfg.channels[key].enabled=sel.value});
+  CHANNELS_WITH_SENDERS.forEach((key)=>{const channelDiv=document.querySelector(`.channel[data-channel="${key}"]`); if(!channelDiv) return; const inp=channelDiv.querySelector('.sender-input'); if(inp){cfg.channels[key]=cfg.channels[key]||{}; cfg.channels[key].senderCount=Math.max(0,parseInt(inp.value||"0",10)); cfg.channels[key].enabled="yes"} else { if(cfg.channels[key]) cfg.channels[key].enabled=cfg.channels[key].enabled||"no"}});
+  const socialToggle=document.querySelector('.channel-toggle[data-channel="socialPosts"]'); cfg.channels.socialPosts=cfg.channels.socialPosts||{enabled:"no",platforms:{}}; if(socialToggle&&socialToggle.value==="yes"){cfg.channels.socialPosts.enabled="yes";SOCIAL_PLATFORMS.forEach((p)=>{const cb=document.querySelector(`.social-platform[data-platform="${p}"]`); cfg.channels.socialPosts.platforms[p]=!!(cb&&cb.checked)})} else {cfg.channels.socialPosts.enabled="no"; cfg.channels.socialPosts.platforms={facebook:false,x:false,linkedin:false,instagram:false}};
+  const smartToggle=document.querySelector('.channel-toggle[data-channel="smartLinks"]'); cfg.channels.smartLinks=cfg.channels.smartLinks||{enabled:"no",selected:[]}; if(smartToggle&&smartToggle.value==="yes"){cfg.channels.smartLinks.enabled="yes"; cfg.channels.smartLinks.selected=$all('.smartlinks:checked').map(cb=>cb.dataset.platform)} else {cfg.channels.smartLinks.enabled="no"; cfg.channels.smartLinks.selected=[]}
+  const paidToggle=document.querySelector('.channel-toggle[data-channel="paidMedia"]'); cfg.channels.paidMedia=cfg.channels.paidMedia||{enabled:"no",platforms:{}}; if(paidToggle&&paidToggle.value==="yes"){cfg.channels.paidMedia.enabled="yes"; PAID_MEDIA_PLATFORMS.forEach((p)=>{const cb=document.querySelector(`.paid-media-platform[data-platform="${p}"]`); cfg.channels.paidMedia.platforms[p]=!!(cb&&cb.checked)})} else {cfg.channels.paidMedia.enabled="no"; cfg.channels.paidMedia.platforms={google:false,meta:false}}
+  cfg.pricing=cfg.pricing||{}; cfg.pricing.discountType=$("#discount-type").value||"percent"; cfg.pricing.discountValue=Math.max(0,parseFloat($("#licence-discount").value||"0")||0); return cfg;
+}
+function createSenderControl(channelDiv,key,initialValue=1){removeSenderControlIfAny(channelDiv); const wrapper=document.createElement("div"); wrapper.className="sender-control"; const label=document.createElement("label"); label.className="sender-count"; label.dataset.channel=key; label.innerText="Sender IDs / Accounts"; const input=document.createElement("input"); input.type="number"; input.min="0"; input.step="1"; input.className="sender-input"; input.dataset.channel=key; input.value=String(initialValue??1); input.style.marginTop="6px"; input.addEventListener("input",()=>{const cfg=readFormToConfig(); calculateAndRenderPricing(cfg); updatePreview(cfg);}); label.appendChild(document.createElement("br")); label.appendChild(input); wrapper.appendChild(label); channelDiv.appendChild(wrapper);}
+function removeSenderControlIfAny(channelDiv){const existing=channelDiv.querySelector(".sender-control"); if(existing) existing.remove()}
+function updateSenderControlsForToggle(sel){const key=sel.dataset.channel; if(!CHANNELS_WITH_SENDERS.includes(key)) return; const channelDiv=document.querySelector(`.channel[data-channel="${key}"]`); if(!channelDiv) return; if(sel.value==="yes"){const savedCfg=loadConfig(); const existingCount=savedCfg.channels&&savedCfg.channels[key]&&typeof savedCfg.channels[key].senderCount!=="undefined"?savedCfg.channels[key].senderCount:1; createSenderControl(channelDiv,key,existingCount<=0?1:existingCount)} else removeSenderControlIfAny(channelDiv)}
+function updateSocialPlatformsVisibility(sel,cfg=null){const socialPlatformsDiv=document.querySelector('.social-platforms'); if(!socialPlatformsDiv||!sel) return; const enabled=sel.value==="yes"; socialPlatformsDiv.classList.toggle('hidden',!enabled); socialPlatformsDiv.setAttribute('aria-hidden',String(!enabled)); SOCIAL_PLATFORMS.forEach((p)=>{const cb=document.querySelector(`.social-platform[data-platform="${p}"]`); if(!cb) return; cb.disabled=!enabled; if(!enabled) cb.checked=false; if(cfg&&enabled){cb.checked=!!(cfg.channels&&cfg.channels.socialPosts&&cfg.channels.socialPosts.platforms&&cfg.channels.socialPosts.platforms[p])}})}
+function updateSmartLinksChildren(sel,cfg=null){if(!sel) return; const enabled=sel.value==="yes"; const listEl=document.querySelector('.smartlinks-list'); if(listEl) listEl.classList.toggle('hidden',!enabled); const childCheckboxes=$all('.smartlinks'); childCheckboxes.forEach(cb=>{cb.disabled=!enabled; if(!enabled) cb.checked=false}); if(cfg&&enabled&&cfg.channels&&Array.isArray(cfg.channels.smartLinks.selected)){const selected=cfg.channels.smartLinks.selected; childCheckboxes.forEach(cb=>{cb.checked=selected.includes(cb.dataset.platform)})}}
+function updatePaidMediaTopVisibility(sel,cfg=null){const list=document.querySelector('.paid-media-platforms'); if(!list||!sel) return; const enabled=sel.value==="yes"; list.classList.toggle('hidden',!enabled); list.setAttribute('aria-hidden',String(!enabled)); PAID_MEDIA_PLATFORMS.forEach((p)=>{const cb=document.querySelector(`.paid-media-platform[data-platform="${p}"]`); if(!cb) return; cb.disabled=!enabled; if(!enabled) cb.checked=false; if(cfg&&enabled&&cfg.channels&&cfg.channels.paidMedia&&cfg.channels.paidMedia.platforms){cb.checked=!!cfg.channels.paidMedia.platforms[p]}})}
+function calculatePricing(cfg){if(!cfg) cfg=readFormToConfig(); const audienceIncluded=cfg.audienceIncluded??0; const users=cfg.numUsers??0; const straightAttributes=cfg.numAttributes??0; const derivedAttributes=cfg.numDerivedAttributes??0; const businessUnits=cfg.businessUnits??0; const storageTB=cfg.dataStorageTB??0; const sdkEventsMN=(typeof cfg.audienceBase!=="undefined")?Number(cfg.audienceBase)||0:0; const whatsappEnabled=cfg.channels&&cfg.channels.whatsapp&&cfg.channels.whatsapp.enabled==="yes"; const analyticsEnabled=cfg.analytics360==="yes"; const realtimeEnabled=cfg.realTimeApi==="yes"; const base=PRICING.baseLicense; const audienceCost=audienceIncluded*PRICING.audiencePerUnit; const userCost=users*PRICING.userPerUnit; const straightAttrCost=straightAttributes*PRICING.straightAttributeUnit; const derivedAttrCost=derivedAttributes*PRICING.derivedAttributeUnit; const buCost=businessUnits*PRICING.businessUnitPerUnit; const whatsappCost=whatsappEnabled?PRICING.whatsappIfYes:0; const storageCost=storageTB*PRICING.storagePerTB; const analyticsCost=analyticsEnabled?PRICING.analytics360IfYes:0; const realtimeCost=realtimeEnabled?PRICING.realtimeIfYes:0; const sdkEventsCost=sdkEventsMN*PRICING.sdkEventsPerMN; const total=base+audienceCost+userCost+straightAttrCost+derivedAttrCost+buCost+whatsappCost+storageCost+analyticsCost+realtimeCost+sdkEventsCost; const discType=(cfg.pricing&&cfg.pricing.discountType)?cfg.pricing.discountType:"percent"; const discVal=(cfg.pricing&&typeof cfg.pricing.discountValue!=="undefined")?cfg.pricing.discountValue:0; let discountAmt=0; if(discType==="percent"){discountAmt=Math.max(0,total*(Math.min(100,discVal)/100));} else {discountAmt=Math.max(0,Math.min(total,discVal));} const afterDiscount=Math.max(0,total-discountAmt); return {base,audienceCost,userCost,straightAttrCost,derivedAttrCost,buCost,whatsappCost,storageCost,analyticsCost,realtimeCost,sdkEventsCost,total,discountType:discType,discountValue:discVal,discountAmt,afterDiscount}}
+function calculateAndRenderPricing(cfg=null){const p=calculatePricing(cfg); $("#licence-base").textContent=toINR(p.base); $("#licence-audience").textContent=toINR(p.audienceCost); $("#licence-users").textContent=toINR(p.userCost); $("#licence-attributes").textContent=toINR(p.straightAttrCost); $("#licence-derived").textContent=toINR(p.derivedAttrCost); $("#licence-bu").textContent=toINR(p.buCost); $("#licence-whatsapp").textContent=p.whatsappCost?toINR(p.whatsappCost):"—"; $("#licence-storage").textContent=toINR(p.storageCost); $("#licence-analytics").textContent=p.analyticsCost?toINR(p.analyticsCost):"—"; $("#licence-realtime").textContent=p.realtimeCost?toINR(p.realtimeCost):"—"; $("#licence-sdkevents").textContent=toINR(p.sdkEventsCost); $("#licence-total").textContent=toINR(p.total); $("#licence-discount-amt").textContent=toINR(p.discountAmt); $("#licence-after").textContent=toINR(p.afterDiscount)}
+function updatePreview(cfg){$("#livePreview").textContent=JSON.stringify(cfg,null,2)}
+function exportJSON(cfg){const blob=new Blob([JSON.stringify(cfg,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`resul-startup-quote-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
+function escapeHtml(str){return String(str).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+function exportQuotePDF(){const cfg=readFormToConfig();calculateAndRenderPricing(cfg);updatePreview(cfg);const quoteEl=document.querySelector('.pricing-card'); if(!quoteEl){alert("No pricing card found to export.");return} const wrapper=document.createElement('div');wrapper.style.padding="18px";wrapper.style.background="#ffffff";wrapper.style.color="#111827";wrapper.style.fontFamily="Arial, Helvetica, sans-serif";wrapper.style.width="800px"; const title=document.createElement('div'); title.innerHTML=`<h2 style="margin:0 0 8px 0;">RESUL Startup Edition — Quote</h2><div style="font-size:0.9rem;color:#374151;margin-bottom:12px;"><strong>Client:</strong> ${escapeHtml(cfg.clientName||"—")} &nbsp; | &nbsp;<strong>Date:</strong> ${new Date().toLocaleString()}</div>`; wrapper.appendChild(title); const clone=quoteEl.cloneNode(true); clone.querySelectorAll('input, select, button').forEach((el)=>{const span=document.createElement('span'); if(el.type==='checkbox'){span.textContent=el.checked?"Yes":"No";} else {span.textContent=el.value??el.textContent??"";} el.parentNode&&el.parentNode.replaceChild(span,el)}); clone.querySelectorAll('.btn,.json-preview,.note').forEach(n=>n.remove()); wrapper.appendChild(clone); const opt={margin:[10,10,10,10],filename:`resul-startup-quote-${new Date().toISOString().slice(0,10)}.pdf`,image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}; html2pdf().set(opt).from(wrapper).save().catch(err=>{console.error("PDF export failed",err);alert("Export to PDF failed. See console for details.");})}
+function showStatus(msg,isError=false){const el=$("#statusArea"); if(!el) return; el.textContent=msg; el.style.color=isError?"#b91c1c":"inherit"; if(!msg) return; setTimeout(()=>{if(el.textContent===msg) el.textContent="";},3500)}
+function validateConfig(cfg){const errors=[]; if(!cfg.clientName) errors.push("Client name is required."); if(Number.isNaN(cfg.numUsers)||cfg.numUsers<1) errors.push("No. of users must be at least 1."); if(Number.isNaN(cfg.dataStorageTB)||cfg.dataStorageTB<0) errors.push("Data storage must be 0 or more (TB)."); return errors}
+document.addEventListener("DOMContentLoaded",()=>{const initialCfg=loadConfig();reflectToForm(initialCfg); $all(".channel-toggle").forEach((sel)=>{const key=sel.dataset.channel; if(key==="socialPosts") updateSocialPlatformsVisibility(sel,initialCfg); else if(key==="smartLinks") updateSmartLinksChildren(sel,initialCfg); else if(key==="paidMedia") updatePaidMediaTopVisibility(sel,initialCfg); else updateSenderControlsForToggle(sel); sel.addEventListener("change",()=>{updateSenderControlsForToggle(sel); if(sel.dataset.channel==="socialPosts") updateSocialPlatformsVisibility(sel); if(sel.dataset.channel==="smartLinks") updateSmartLinksChildren(sel); if(sel.dataset.channel==="paidMedia") updatePaidMediaTopVisibility(sel); const cfg=readFormToConfig(); calculateAndRenderPricing(cfg); updatePreview(cfg);});}); $all(".smartlinks, .social-platform, .paid-media-platform").forEach(cb=>{cb.addEventListener("change",()=>{const cfg=readFormToConfig(); calculateAndRenderPricing(cfg); updatePreview(cfg);});}); $("#discount-type").addEventListener("change",()=>{const cfg=readFormToConfig(); calculateAndRenderPricing(cfg); updatePreview(cfg);}); $("#licence-discount").addEventListener("input",()=>{const cfg=readFormToConfig(); calculateAndRenderPricing(cfg); updatePreview(cfg);}); $all("#startup-form input, #startup-form select").forEach((el)=>{el.addEventListener("input",()=>{const cfg=readFormToConfig(); calculateAndRenderPricing(cfg); updatePreview(cfg);});}); $("#saveBtn").addEventListener("click",()=>{const cfg=readFormToConfig(); const errors=validateConfig(cfg); if(errors.length){showStatus(errors.join(" "), true); return;} saveConfig(cfg); showStatus("Startup edition saved.");}); $("#resetBtn").addEventListener("click",()=>{if(!confirm("Reset Startup edition to default values? This will overwrite unsaved changes.")) return; const copy=structuredClone(defaults); saveConfig(copy); reflectToForm(copy); showStatus("Reset to defaults.");}); $("#exportBtn").addEventListener("click",()=>{const cfg=readFormToConfig(); calculateAndRenderPricing(cfg); exportJSON(cfg);}); $("#exportPdfBtn").addEventListener("click",()=>{exportQuotePDF();}); $("#startup-form").addEventListener("change",()=>{const cfg=readFormToConfig(); calculateAndRenderPricing(cfg); updatePreview(cfg);}); calculateAndRenderPricing(initialCfg);});
+  </script>
+</body>
+</html>
