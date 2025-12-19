@@ -10,6 +10,8 @@
 
   <!-- html2pdf bundle for client-side PDF export (kept as CDN) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" defer></script>
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
   <!-- App script -->
   <script src="app.js" defer></script>
 </head>
@@ -266,6 +268,7 @@
           <div class="pricing-actions" style="margin-top:12px;">
             <button type="button" id="resetBtn" class="btn">Reset to defaults</button>
             <button type="button" id="exportPdfBtn" class="btn">Export Quote (PDF)</button>
+            <button type="button" id="exportExcelBtn" class="btn">Export Quote (Excel)</button>
           </div>
         </section>
 
