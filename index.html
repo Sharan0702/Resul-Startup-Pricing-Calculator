@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RESUL Startup Edition Pricing Calculator</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- html2pdf bundle for client-side PDF export (kept as CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" defer></script>
+  <!-- App script -->
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <h1>RESUL Startup Edition Pricing Calculator</h1>
+    </header>
+
+    <div class="layout">
+      <form id="startup-form" class="card" novalidate>
+        <section class="panel">
+          <h2>Client & Account</h2>
+
+          <label class="field">
+            Client name
+            <input type="text" id="clientName" placeholder="Client name" />
+          </label>
+
+          <label class="field">
+            Account type
+            <input type="text" id="accountType" value="Startup" readonly />
+          </label>
+
+          <label class="field">
+            Deployment
+            <div class="readonly-field">
+              <input type="text" id="deploymentDisplay" value="Cloud" readonly />
+              <input type="hidden" id="deployment" value="cloud" />
+            </div>
+          </label>
+
+          <label class="field">
+            SDK Events Per Year (in MN)
+            <input type="number" id="audienceBase" placeholder="Enter SDK events per year (in MN)" step="any" min="0" />
+          </label>
+
+          <label class="field">
+            Audience Included
+            <input type="number" id="audienceIncluded" min="0" value="0" />
+          </label>
+
+          <label class="field">
+            Business Units
+            <input type="number" id="businessUnits" min="0" value="0" />
+          </label>
+        </section>
+
+        <section class="panel">
+          <h2>Capacity & Features</h2>
+
+          <label class="field">
+            No. of users
+            <input type="number" id="numUsers" min="1" value="3" />
+          </label>
+
+          <label class="field">
+            No. of straigth attribute
+            <input type="number" id="numAttributes" min="0" value="50" />
+          </label>
+
+          <label class="field">
+            No. of derived attributes
+            <input type="number" id="numDerivedAttributes" min="0" value="5" />
+          </label>
+
+          <label class="field">
+            Total data storage (TB)
+            <input type="number" id="dataStorage" min="0" step="0.1" value="0.5" />
+          </label>
+
+          <label class="field">
+            Audience Analytics 360
+            <select id="analytics360">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </label>
+
+          <label class="field">
+            Real-time trigger API
+            <select id="realTimeApi">
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="panel full-width">
+          <h2>Channels</h2>
+
+          <div class="channels-grid">
+            <div class="channel" data-channel="email">
+              <label> Email
+                <select class="channel-toggle" data-channel="email">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="sms">
+              <label> SMS
+                <select class="channel-toggle" data-channel="sms">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="whatsapp">
+              <label> WhatsApp
+                <select class="channel-toggle" data-channel="whatsapp">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="rcs">
+              <label> RCS
+                <select class="channel-toggle" data-channel="rcs">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="webpush">
+              <label> Web push & Overlays
+                <select class="channel-toggle" data-channel="webpush">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="apppush">
+              <label> App push & In-App Overlays
+                <select class="channel-toggle" data-channel="apppush">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="qrcode">
+              <label> QR Code
+                <select class="channel-toggle" data-channel="qrcode">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="voice">
+              <label> Voice (VMS)
+                <select class="channel-toggle" data-channel="voice">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="channel" data-channel="socialPosts">
+              <label> Social Posts (Organic)
+                <select class="channel-toggle" data-channel="socialPosts">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+
+              <div class="social-platforms hidden" aria-hidden="true">
+                <div class="platform"><label><input type="checkbox" class="social-platform" data-platform="facebook" /> Facebook</label></div>
+                <div class="platform"><label><input type="checkbox" class="social-platform" data-platform="x" /> X (Twitter)</label></div>
+                <div class="platform"><label><input type="checkbox" class="social-platform" data-platform="linkedin" /> LinkedIn</label></div>
+                <div class="platform"><label><input type="checkbox" class="social-platform" data-platform="instagram" /> Instagram</label></div>
+              </div>
+            </div>
+
+            <div class="channel" data-channel="smartLinks">
+              <label> Smart Links
+                <select class="channel-toggle" data-channel="smartLinks">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+
+              <div class="platforms-list smartlinks-list hidden" aria-hidden="true">
+                <label><input type="checkbox" class="smartlinks" data-platform="socialPostsAds" disabled /> Social Posts/Ads</label>
+                <label style="margin-left:12px;"><input type="checkbox" class="smartlinks" data-platform="paidMedia" disabled /> Paid Media</label>
+              </div>
+            </div>
+
+            <div class="channel" data-channel="paidMedia">
+              <label> Paid Media
+                <select class="channel-toggle" data-channel="paidMedia">
+                  <option value="no">No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+
+              <div class="platforms-list hidden paid-media-platforms" aria-hidden="true">
+                <label><input type="checkbox" class="paid-media-platform" data-platform="google" /> Google</label>
+                <label><input type="checkbox" class="paid-media-platform" data-platform="meta" /> Meta</label>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <section class="panel actions-row">
+          <div class="actions-left">
+            <button type="button" id="saveBtn" class="btn primary">Save Startup Edition</button>
+          </div>
+        </section>
+      </form>
+
+      <aside class="side-column">
+        <section class="card pricing-card printable-quote" aria-live="polite">
+          <h2>License Pricing</h2>
+
+          <div class="pricing-grid">
+            <div class="label">Licence Cost (Standard)</div><div class="value" id="licence-base">—</div>
+            <div class="label">Audience Included</div><div class="value" id="licence-audience">—</div>
+            <div class="label">User</div><div class="value" id="licence-users">—</div>
+            <div class="label">Straight Attributes</div><div class="value" id="licence-attributes">—</div>
+            <div class="label">Derived Attributes</div><div class="value" id="licence-derived">—</div>
+            <div class="label">Business Unit</div><div class="value" id="licence-bu">—</div>
+            <div class="label">WhatsApp (if opted)</div><div class="value" id="licence-whatsapp">—</div>
+            <div class="label">Data Storage (TB)</div><div class="value" id="licence-storage">—</div>
+            <div class="label">Audience Analytics 360</div><div class="value" id="licence-analytics">—</div>
+            <div class="label">Real-time trigger API</div><div class="value" id="licence-realtime">—</div>
+            <div class="label">SDK Events (in MN)</div><div class="value" id="licence-sdkevents">—</div>
+            <div class="divider" style="grid-column:1/-1"></div>
+            <div class="label total-label">Total License cost</div><div class="value total-value" id="licence-total">—</div>
+            <div class="label">Discount type</div>
+            <div class="value">
+              <select id="discount-type">
+                <option value="percent">Percent (%)</option>
+                <option value="amount">Amount (INR)</option>
+              </select>
+            </div>
+            <div class="label">Discount</div>
+            <div class="value">
+              <input type="number" id="licence-discount" min="0" value="0" style="width:120px" />
+            </div>
+            <div class="label">Discount (amount)</div><div class="value" id="licence-discount-amt">—</div>
+            <div class="label total-label">License Cost after Discount</div><div class="value total-value" id="licence-after">—</div>
+          </div>
+
+          <p class="note">All amounts shown in INR. Discount applies to the Total License cost.</p>
+
+          <div class="pricing-actions" style="margin-top:12px;">
+            <button type="button" id="resetBtn" class="btn">Reset to defaults</button>
+            <button type="button" id="exportPdfBtn" class="btn">Export Quote (PDF)</button>
+          </div>
+        </section>
+
+        <section class="card preview">
+          <h3>Live Preview</h3>
+          <pre id="livePreview" class="json-preview" tabindex="0" aria-label="Live preview of configuration">{}</pre>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <small>Startup edition editor — changes are saved to your browser (localStorage).</small>
+    </footer>
+  </main>
+</body>
+</html>
